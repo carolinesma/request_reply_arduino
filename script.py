@@ -8,15 +8,16 @@ while True: #Loop para a conexão com o Arduino
         pass
         print('Não foi possível conectar')
 while ser.is_open: #Loop enquanto a conexão está aberta
-    print('Enviando mensagem para o arduino...')
-    ser.write(chr(10).encode())
+    msg = ser.read(3).decode("ascii","ignore") #Recebe Syn
+    if chr(40) in msg: #Envia Ack-Syn
+      print('Enviando mensagem para o arduino...')
+      ser.write(chr(10).encode())
+      print('Aguardando confirmação...')
+      msg = ser.read(3).decode("ascii","ignore")
 
-    print('Aguardando confirmação...')
-    msg = ser.read(3).decode("ascii","ignore")
-
-    if chr(20) in msg:
+    if chr(20) in msg: #Recebe Ack
       print("Arduino confirmou a conexão.")
-      ser.write(chr(11).encode())
+      #ser.write(chr(11).encode()) 
       ser.flush() #Limpa a comunicação
       print("Finalizando conexão e script...")
       ser.close()
